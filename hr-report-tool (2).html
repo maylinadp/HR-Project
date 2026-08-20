@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F8FA;
+    --surface:#FFFFFF;
+    --ink:#1C2430;
+    --ink-soft:#5B6472;
+    --ink-faint:#94A0AE;
+    --border:#E3E6EA;
+    --accent:#2F5D50;
+    --accent-soft:#E7EFEC;
+    --amber:#B8763F;
+    --amber-soft:#F5E9DC;
+    --red:#B5473F;
+    --red-soft:#F6E6E4;
+    --radius:10px;
+    --shadow:0 1px 2px rgba(28,36,48,0.04), 0 4px 16px rgba(28,36,48,0.03);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:980px;margin:0 auto;padding:32px 24px 80px;}
+
+  /* Header */
+  header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap;}
+  header.top h1{font-family:'Newsreader',serif;font-weight:600;font-size:32px;margin:0 0 4px;letter-spacing:-0.01em;cursor:text;border-bottom:1px dashed transparent;}
+  header.top h1:hover{border-bottom-color:var(--border);}
+  #teamNameInput{font-family:'Newsreader',serif;font-weight:600;font-size:32px;letter-spacing:-0.01em;border:none;border-bottom:1px solid var(--accent);background:none;color:var(--ink);padding:0 0 2px;margin:0 0 4px;width:100%;max-width:420px;}
+  #teamNameInput:focus{outline:none;}
+  header.top p{margin:0;color:var(--ink-soft);font-size:14px;}
+  .badge{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.04em;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:20px;text-transform:uppercase;}
+
+  /* Tabs */
+  nav.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:28px;}
+  nav.tabs button{
+    font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:var(--ink-soft);
+    background:none;border:none;padding:10px 4px;margin-right:20px;cursor:pointer;
+    border-bottom:2px solid transparent;transition:color .15s, border-color .15s;
+  }
+  nav.tabs button:hover{color:var(--ink);}
+  nav.tabs button.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fade .2s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-bottom:20px;}
+  .card h2{font-family:'Newsreader',serif;font-size:19px;font-weight:600;margin:0 0 4px;}
+  .card .sub{color:var(--ink-soft);font-size:13px;margin:0 0 16px;}
+
+  /* Week strip (signature element) */
+  .week-strip{display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px;}
+  .day-pill{
+    flex:1;min-width:78px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:10px 8px;text-align:center;cursor:pointer;transition:border-color .15s, transform .1s;
+  }
+  .day-pill:hover{transform:translateY(-1px);}
+  .day-pill.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+  .day-pill .dow{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;}
+  .day-pill .dnum{font-family:'Newsreader',serif;font-size:18px;font-weight:600;margin:2px 0 6px;}
+  .dot-row{display:flex;gap:4px;justify-content:center;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--border);}
+  .dot.filled{background:var(--accent);}
+
+  /* Form */
+  label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.03em;}
+  label:first-child{margin-top:0;}
+  select, textarea, input[type=text], input[type=date]{
+    width:100%;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);
+    background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;resize:vertical;
+  }
+  textarea{min-height:64px;line-height:1.5;}
+  select:focus, textarea:focus, input:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .row{display:flex;gap:14px;flex-wrap:wrap;}
+  .row > div{flex:1;min-width:180px;}
+
+  .btn{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;
+    border-radius:8px;padding:10px 18px;border:1px solid transparent;transition:filter .15s;
+  }
+  .btn:hover{filter:brightness(0.94);}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-ghost{background:none;border-color:var(--border);color:var(--ink-soft);}
+  .btn-danger{background:var(--red-soft);color:var(--red);}
+  .actions{display:flex;gap:10px;margin-top:18px;}
+
+  .entry-view{border-top:1px solid var(--border);margin-top:18px;padding-top:16px;}
+  .entry-view h3{font-size:13px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);margin:0 0 10px;}
+  .entry-block{margin-bottom:14px;font-size:14px;line-height:1.55;}
+  .entry-block .label{font-weight:600;color:var(--ink);}
+  .entry-block .empty{color:var(--ink-faint);font-style:italic;}
+  .cat-tag{display:inline-block;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:20px;margin-right:6px;vertical-align:middle;}
+  .person-toggle{display:flex;gap:6px;margin-bottom:2px;}
+  .person-toggle button{
+    flex:1;font-family:'Inter';font-size:13px;font-weight:600;padding:9px;border-radius:8px;
+    border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);cursor:pointer;
+  }
+  .person-toggle button.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+  .member-grid{display:flex;gap:16px;flex-wrap:wrap;}
+  .member-edit{flex:1;min-width:220px;}
+  .member-name{font-family:'Newsreader',serif;font-weight:600;font-size:16px;margin-bottom:8px;border:1px solid transparent;background:none;padding:4px 6px;border-radius:6px;}
+  .member-name:hover{border-color:var(--border);}
+  .member-desc{font-size:13px;min-height:44px;border:1px solid transparent;background:none;padding:4px 6px;}
+  .member-desc:hover{border-color:var(--border);}
+
+  /* Milestones */
+  .milestone{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+  .milestone:last-child{border-bottom:none;}
+  .m-status{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .m-status.notstarted{background:var(--ink-faint);}
+  .m-status.inprogress{background:var(--accent);}
+  .m-status.atrisk{background:var(--red);}
+  .m-status.done{background:#3D8361;}
+  .m-body{flex:1;}
+  .m-name{font-weight:600;font-size:14px;}
+  .m-meta{font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-top:2px;}
+  .m-tag{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;}
+  .m-tag.notstarted{background:var(--bg);color:var(--ink-faint);}
+  .m-tag.inprogress{background:var(--accent-soft);color:var(--accent);}
+  .m-tag.atrisk{background:var(--red-soft);color:var(--red);}
+  .m-tag.done{background:#E4F2EA;color:#3D8361;}
+  .icon-btn{background:none;border:none;color:var(--ink-faint);cursor:pointer;font-size:16px;padding:4px 8px;}
+  .icon-btn:hover{color:var(--red);}
+
+  .new-milestone{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+  .new-milestone input, .new-milestone select{flex:1;min-width:140px;}
+
+  /* Weekly report */
+  .week-picker{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .week-picker button{background:var(--surface);border:1px solid var(--border);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:16px;color:var(--ink-soft);}
+  .week-picker .range{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink);}
+
+  .report{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:32px;}
+  .report h2{font-family:'Newsreader',serif;font-size:24px;margin:0 0 2px;}
+  .report .meta{color:var(--ink-soft);font-size:13px;margin-bottom:26px;font-family:'IBM Plex Mono',monospace;}
+  .report .person-section{margin-bottom:26px;}
+  .report .person-section h3{font-size:15px;font-weight:700;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:12px;}
+  .report .day-row{margin-bottom:12px;font-size:13.5px;line-height:1.6;}
+  .report .day-row .d{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.03em;}
+  .report .no-entry{color:var(--ink-faint);font-style:italic;font-size:13px;}
+  .report-section-title{font-size:15px;font-weight:700;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:12px;}
+
+  .stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+  .stat{flex:1;min-width:140px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);}
+  .stat .n{font-family:'Newsreader',serif;font-size:28px;font-weight:600;}
+  .stat .l{font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+
+  .empty-state{text-align:center;color:var(--ink-faint);font-size:14px;padding:30px 10px;}
+
+  .reaction-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .reaction-btn{
+    flex:1;min-width:140px;padding:12px 10px;border-radius:8px;border:1px solid var(--border);
+    background:var(--bg);font-family:'Inter',sans-serif;font-weight:600;font-size:13px;cursor:pointer;
+    color:var(--ink-soft);transition:border-color .15s, background .15s, color .15s;
+  }
+  .reaction-btn:hover{border-color:var(--ink-faint);}
+  .reaction-btn.active[data-status="approved"]{background:#E4F2EA;border-color:#3D8361;color:#2E6B4C;}
+  .reaction-btn.active[data-status="hold"]{background:var(--amber-soft);border-color:var(--amber);color:var(--amber);}
+  .reaction-btn.active[data-status="revision"]{background:var(--red-soft);border-color:var(--red);color:var(--red);}
+
+  @media (max-width:640px){
+    .app{padding:16px 12px 60px;}
+    header.top{flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:20px;}
+    header.top h1{font-size:24px;}
+    #teamNameInput{font-size:24px;}
+    nav.tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:20px;}
+    nav.tabs button{white-space:nowrap;margin-right:14px;padding:10px 2px;}
+    .card{padding:16px;}
+    .report{padding:18px;}
+    .week-strip{gap:6px;}
+    .day-pill{min-width:58px;padding:8px 4px;}
+    .member-grid{flex-direction:column;gap:12px;}
+    .row{gap:10px;}
+    select, textarea, input[type=text], input[type=date]{font-size:16px;padding:11px 12px;}
+    .btn{width:100%;padding:12px 16px;}
+    .actions{flex-direction:column;}
+    .reaction-row{flex-direction:column;}
+    .reaction-btn{width:100%;padding:13px 10px;}
+    .week-picker{gap:10px;}
+    .week-picker button{width:38px;height:38px;font-size:18px;}
+    .icon-btn{padding:8px 10px;font-size:18px;}
+    .stat-row{gap:10px;}
+    .stat{min-width:calc(50% - 5px);padding:14px;}
+    .new-milestone{flex-direction:column;}
+    .new-milestone input, .new-milestone select, .new-milestone button{width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div>
+      <h1 id="teamNameDisplay" tabindex="0" title="Click to rename">Team Report</h1>
+      <input type="text" id="teamNameInput" style="display:none;" maxlength="60">
+      <p>Daily logs &amp; weekly summary for the COO</p>
+    </div>
+    <span class="badge" id="statusBadge">Loading…</span>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="daily" class="active">Daily Log</button>
+    <button data-tab="milestones">Milestones</button>
+    <button data-tab="weekly">Weekly Report</button>
+  </nav>
+
+  <!-- DAILY -->
+  <section class="panel active" id="panel-daily">
+    <div class="week-strip" id="weekStrip"></div>
+
+    <div class="card">
+      <h2>Team Members</h2>
+      <p class="sub">Click a name or description to edit — changes are shared with your peer</p>
+      <div class="member-grid">
+        <div class="member-edit">
+          <input type="text" class="member-name" id="mem_me_name" maxlength="40" placeholder="Name">
+          <textarea class="member-desc" id="mem_me_desc" maxlength="160" placeholder="Role / description (optional)"></textarea>
+        </div>
+        <div class="member-edit">
+          <input type="text" class="member-name" id="mem_peer_name" maxlength="40" placeholder="Name">
+          <textarea class="member-desc" id="mem_peer_desc" maxlength="160" placeholder="Role / description (optional)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="person-toggle" id="personToggle">
+        <button data-person="me" class="active">Me</button>
+        <button data-person="peer">Peer</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 id="entryDateLabel">Today's entry</h2>
+      <p class="sub" id="entryPersonLabel">Logging as Me</p>
+
+      <label>Tasks completed today</label>
+      <div class="row">
+        <div style="flex:0 0 180px;">
+          <select id="f_completedCat">
+            <option value="HR Admin">HR Admin</option>
+            <option value="Recruitment">Recruitment</option>
+            <option value="People Experience">People Experience</option>
+          </select>
+        </div>
+      </div>
+      <textarea id="f_completed" placeholder="e.g. Finalized offer letter for new hire, closed 3 open tickets" style="margin-top:8px;"></textarea>
+
+      <label>Tasks in progress</label>
+      <div class="row">
+        <div style="flex:0 0 180px;">
+          <select id="f_progressCat">
+            <option value="HR Admin">HR Admin</option>
+            <option value="Recruitment">Recruitment</option>
+            <option value="People Experience">People Experience</option>
+          </select>
+        </div>
+      </div>
+      <textarea id="f_progress" placeholder="e.g. Reviewing Q3 headcount plan" style="margin-top:8px;"></textarea>
+
+      <label>Blockers / issues</label>
+      <textarea id="f_blockers" placeholder="e.g. Waiting on legal sign-off for policy update"></textarea>
+
+      <label>Notes</label>
+      <textarea id="f_notes" placeholder="Anything else worth flagging"></textarea>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="saveEntryBtn">Save entry</button>
+        <button class="btn btn-ghost" id="clearEntryBtn">Clear</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Both entries — <span id="bothDateLabel"></span></h2>
+      <div class="entry-view" id="viewMe">
+        <h3>Me</h3>
+        <div id="viewMeBody"></div>
+      </div>
+      <div class="entry-view" id="viewPeer">
+        <h3>Peer</h3>
+        <div id="viewPeerBody"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MILESTONES -->
+  <section class="panel" id="panel-milestones">
+    <div class="card">
+      <h2>Upcoming Projects &amp; Milestones</h2>
+      <p class="sub">Shown on the dashboard and included in the weekly report</p>
+      <div id="milestoneList"></div>
+      <div id="milestoneEmpty" class="empty-state" style="display:none;">No milestones yet — add one below.</div>
+
+      <div class="new-milestone">
+        <input type="text" id="m_name" placeholder="Milestone / project name">
+        <select id="m_owner">
+          <option value="me">Me</option>
+          <option value="peer">Peer</option>
+          <option value="both">Both</option>
+        </select>
+        <input type="date" id="m_date">
+        <select id="m_status">
+          <option value="notstarted">Not started</option>
+          <option value="inprogress">In progress</option>
+          <option value="atrisk">At risk</option>
+          <option value="done">Done</option>
+        </select>
+        <button class="btn btn-primary" id="addMilestoneBtn">Add</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- WEEKLY -->
+  <section class="panel" id="panel-weekly">
+    <div class="week-picker">
+      <button id="prevWeek">←</button>
+      <span class="range" id="weekRange"></span>
+      <button id="nextWeek">→</button>
+    </div>
+
+    <div class="stat-row" id="statRow"></div>
+
+    <div class="report" id="reportBody"></div>
+
+    <div class="card" style="margin-top:20px;">
+      <h2>Manager Review</h2>
+      <p class="sub">For the COO — mark this week's report</p>
+      <div class="reaction-row" id="reactionRow">
+        <button class="reaction-btn" data-status="approved">✅ Approved</button>
+        <button class="reaction-btn" data-status="hold">⏸ Hold</button>
+        <button class="reaction-btn" data-status="revision">✏️ Needs Revision</button>
+      </div>
+      <textarea id="reviewComment" placeholder="Optional comment for the team"></textarea>
+      <div class="actions">
+        <button class="btn btn-primary" id="saveReviewBtn">Save review</button>
+      </div>
+      <p class="sub" id="reviewMeta" style="margin-top:10px;margin-bottom:0;"></p>
+    </div>
+
+    <div class="actions" style="margin-top:16px;">
+      <button class="btn btn-primary" id="copyReportBtn">Copy report as text</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function pad(n){return n<10?'0'+n:''+n;}
+function toISO(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function fromISO(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function startOfWeek(d){ // Monday start
+  const day=d.getDay();
+  const diff=(day===0?-6:1-day);
+  const r=new Date(d);r.setDate(d.getDate()+diff);r.setHours(0,0,0,0);return r;
+}
+function fmtShort(d){return d.toLocaleDateString(undefined,{month:'short',day:'numeric'});}
+
+function personName(key){
+  const m = state.members[key];
+  return (m && m.name && m.name.trim()) ? m.name.trim() : (key==='me'?'Me':'Peer');
+}
+
+let state = {
+  selectedDate: toISO(new Date()),
+  selectedPerson: 'me',
+  weekAnchor: startOfWeek(new Date()),
+  entries: {},      // key `${date}|${person}` -> {completed,completedCat,progress,progressCat,blockers,notes}
+  milestones: [],    // {id,name,owner,targetDate,status}
+  reviews: {},        // key weekStartISO -> {status,comment,updatedAt}
+  teamName: 'Team Report',
+  members: {me:{name:'Me',desc:''}, peer:{name:'Peer',desc:''}}
+};
+
+async function loadAll(){
+  try{
+    const e = await window.storage.get('entries', true);
+    state.entries = e ? JSON.parse(e.value) : {};
+  }catch(err){ state.entries = {}; }
+  try{
+    const m = await window.storage.get('milestones', true);
+    state.milestones = m ? JSON.parse(m.value) : [];
+  }catch(err){ state.milestones = []; }
+  try{
+    const r = await window.storage.get('reviews', true);
+    state.reviews = r ? JSON.parse(r.value) : {};
+  }catch(err){ state.reviews = {}; }
+  try{
+    const s = await window.storage.get('settings', true);
+    const parsed = s ? JSON.parse(s.value) : {};
+    state.teamName = parsed.teamName || 'Team Report';
+    state.members = parsed.members || {me:{name:'Me',desc:''}, peer:{name:'Peer',desc:''}};
+  }catch(err){ state.teamName = 'Team Report'; state.members = {me:{name:'Me',desc:''}, peer:{name:'Peer',desc:''}}; }
+  document.getElementById('teamNameDisplay').textContent = state.teamName;
+  document.title = state.teamName;
+  document.getElementById('mem_me_name').value = state.members.me.name || '';
+  document.getElementById('mem_me_desc').value = state.members.me.desc || '';
+  document.getElementById('mem_peer_name').value = state.members.peer.name || '';
+  document.getElementById('mem_peer_desc').value = state.members.peer.desc || '';
+  updatePersonLabels();
+  document.getElementById('statusBadge').textContent = 'Synced • shared with peer';
+}
+
+async function saveSettings(){
+  try{
+    await window.storage.set('settings', JSON.stringify({teamName: state.teamName, members: state.members}), true);
+  }catch(err){ console.error('save settings failed', err); }
+}
+async function saveReviews(){
+  try{
+    await window.storage.set('reviews', JSON.stringify(state.reviews), true);
+  }catch(err){ console.error('save reviews failed', err); }
+}
+
+async function saveEntries(){
+  try{
+    await window.storage.set('entries', JSON.stringify(state.entries), true);
+  }catch(err){ console.error('save entries failed', err); }
+}
+async function saveMilestones(){
+  try{
+    await window.storage.set('milestones', JSON.stringify(state.milestones), true);
+  }catch(err){ console.error('save milestones failed', err); }
+}
+
+/* ---------- EDITABLE TEAM NAME ---------- */
+const teamNameDisplay = document.getElementById('teamNameDisplay');
+const teamNameInput = document.getElementById('teamNameInput');
+teamNameDisplay.addEventListener('click', ()=>{
+  teamNameInput.value = state.teamName;
+  teamNameDisplay.style.display = 'none';
+  teamNameInput.style.display = 'block';
+  teamNameInput.focus();
+  teamNameInput.select();
+});
+async function commitTeamName(){
+  const val = teamNameInput.value.trim() || 'Team Report';
+  state.teamName = val;
+  teamNameDisplay.textContent = val;
+  document.title = val;
+  teamNameInput.style.display = 'none';
+  teamNameDisplay.style.display = 'block';
+  await saveSettings();
+}
+teamNameInput.addEventListener('keydown', (e)=>{
+  if(e.key==='Enter'){ e.preventDefault(); commitTeamName(); }
+  if(e.key==='Escape'){ teamNameInput.style.display='none'; teamNameDisplay.style.display='block'; }
+});
+teamNameInput.addEventListener('blur', commitTeamName);
+
+/* ---------- TEAM MEMBERS ---------- */
+function updatePersonLabels(){
+  document.querySelector('#personToggle button[data-person="me"]').textContent = personName('me');
+  document.querySelector('#personToggle button[data-person="peer"]').textContent = personName('peer');
+  document.querySelector('#viewMe h3').textContent = personName('me');
+  document.querySelector('#viewPeer h3').textContent = personName('peer');
+  const meOpt = document.querySelector('#m_owner option[value="me"]');
+  const peerOpt = document.querySelector('#m_owner option[value="peer"]');
+  if(meOpt) meOpt.textContent = personName('me');
+  if(peerOpt) peerOpt.textContent = personName('peer');
+  const entryLabel = document.getElementById('entryPersonLabel');
+  if(entryLabel) entryLabel.textContent = 'Logging as ' + personName(state.selectedPerson);
+}
+
+async function commitMember(key){
+  state.members[key] = {
+    name: document.getElementById('mem_'+key+'_name').value.trim(),
+    desc: document.getElementById('mem_'+key+'_desc').value.trim()
+  };
+  updatePersonLabels();
+  renderMilestones();
+  await saveSettings();
+}
+['me','peer'].forEach(key=>{
+  document.getElementById('mem_'+key+'_name').addEventListener('blur', ()=>commitMember(key));
+  document.getElementById('mem_'+key+'_desc').addEventListener('blur', ()=>commitMember(key));
+});
+
+/* ---------- TABS ---------- */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='weekly') renderWeekly();
+    if(btn.dataset.tab==='milestones') renderMilestones();
+  });
+});
+
+/* ---------- WEEK STRIP (daily tab) ---------- */
+function renderWeekStrip(){
+  const anchor = startOfWeek(new Date());
+  const strip = document.getElementById('weekStrip');
+  strip.innerHTML = '';
+  for(let i=0;i<7;i++){
+    const d = new Date(anchor); d.setDate(anchor.getDate()+i);
+    const iso = toISO(d);
+    const pill = document.createElement('div');
+    pill.className = 'day-pill' + (iso===state.selectedDate?' selected':'');
+    const hasMe = !!state.entries[iso+'|me'];
+    const hasPeer = !!state.entries[iso+'|peer'];
+    pill.innerHTML = `
+      <div class="dow">${DOW[d.getDay()]}</div>
+      <div class="dnum">${d.getDate()}</div>
+      <div class="dot-row">
+        <span class="dot ${hasMe?'filled':''}" title="Me"></span>
+        <span class="dot ${hasPeer?'filled':''}" title="Peer"></span>
+      </div>`;
+    pill.addEventListener('click', ()=>{ state.selectedDate = iso; renderDaily(); });
+    strip.appendChild(pill);
+  }
+}
+
+/* ---------- PERSON TOGGLE ---------- */
+document.querySelectorAll('#personToggle button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#personToggle button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.selectedPerson = btn.dataset.person;
+    loadFormForSelection();
+  });
+});
+
+function loadFormForSelection(){
+  const key = state.selectedDate+'|'+state.selectedPerson;
+  const e = state.entries[key] || {completed:'',completedCat:'HR Admin',progress:'',progressCat:'HR Admin',blockers:'',notes:''};
+  document.getElementById('f_completed').value = e.completed;
+  document.getElementById('f_completedCat').value = e.completedCat || 'HR Admin';
+  document.getElementById('f_progress').value = e.progress;
+  document.getElementById('f_progressCat').value = e.progressCat || 'HR Admin';
+  document.getElementById('f_blockers').value = e.blockers;
+  document.getElementById('f_notes').value = e.notes;
+  document.getElementById('entryPersonLabel').textContent = 'Logging as ' + personName(state.selectedPerson);
+}
+
+document.getElementById('saveEntryBtn').addEventListener('click', async ()=>{
+  const key = state.selectedDate+'|'+state.selectedPerson;
+  state.entries[key] = {
+    completed: document.getElementById('f_completed').value.trim(),
+    completedCat: document.getElementById('f_completedCat').value,
+    progress: document.getElementById('f_progress').value.trim(),
+    progressCat: document.getElementById('f_progressCat').value,
+    blockers: document.getElementById('f_blockers').value.trim(),
+    notes: document.getElementById('f_notes').value.trim()
+  };
+  await saveEntries();
+  renderWeekStrip();
+  renderBothEntries();
+  const btn = document.getElementById('saveEntryBtn');
+  const old = btn.textContent;
+  btn.textContent = 'Saved ✓';
+  setTimeout(()=>btn.textContent=old, 1200);
+});
+
+document.getElementById('clearEntryBtn').addEventListener('click', ()=>{
+  document.getElementById('f_completed').value='';
+  document.getElementById('f_progress').value='';
+  document.getElementById('f_blockers').value='';
+  document.getElementById('f_notes').value='';
+});
+
+function renderBothEntries(){
+  const d = fromISO(state.selectedDate);
+  document.getElementById('entryDateLabel').textContent = "Entry — " + d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('bothDateLabel').textContent = d.toLocaleDateString(undefined,{month:'long',day:'numeric'});
+  ['me','peer'].forEach(p=>{
+    const e = state.entries[state.selectedDate+'|'+p];
+    const el = document.getElementById('view'+(p==='me'?'Me':'Peer')+'Body');
+    if(!e || (!e.completed && !e.progress && !e.blockers && !e.notes)){
+      el.innerHTML = '<div class="empty">No entry logged</div>';
+      return;
+    }
+    el.innerHTML = ['completed','progress','blockers','notes'].map(f=>{
+      const labels = {completed:'Completed', progress:'In progress', blockers:'Blockers', notes:'Notes'};
+      if(!e[f]) return '';
+      const catField = f==='completed' ? e.completedCat : (f==='progress' ? e.progressCat : null);
+      const catTag = catField ? `<span class="cat-tag">${escapeHtml(catField)}</span>` : '';
+      return `<div class="entry-block">${catTag}<span class="label">${labels[f]}:</span> ${escapeHtml(e[f])}</div>`;
+    }).join('') || '<div class="empty">No entry logged</div>';
+  });
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function renderDaily(){
+  renderWeekStrip();
+  loadFormForSelection();
+  renderBothEntries();
+}
+
+/* ---------- MILESTONES ---------- */
+const statusLabels = {notstarted:'Not started', inprogress:'In progress', atrisk:'At risk', done:'Done'};
+
+function renderMilestones(){
+  const list = document.getElementById('milestoneList');
+  const empty = document.getElementById('milestoneEmpty');
+  const sorted = [...state.milestones].sort((a,b)=> (a.targetDate||'').localeCompare(b.targetDate||''));
+  if(sorted.length===0){
+    list.innerHTML=''; empty.style.display='block'; return;
+  }
+  empty.style.display='none';
+  list.innerHTML = sorted.map(m=>{
+    const ownerLabel = m.owner==='both' ? 'Both' : personName(m.owner);
+    const dateLabel = m.targetDate ? fmtShort(fromISO(m.targetDate)) : 'No date';
+    return `<div class="milestone">
+      <span class="m-status ${m.status}"></span>
+      <div class="m-body">
+        <div class="m-name">${escapeHtml(m.name)}</div>
+        <div class="m-meta">${ownerLabel} · Target ${dateLabel}</div>
+      </div>
+      <span class="m-tag ${m.status}">${statusLabels[m.status]}</span>
+      <button class="icon-btn" data-id="${m.id}" title="Remove">✕</button>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.icon-btn').forEach(b=>{
+    b.addEventListener('click', async ()=>{
+      state.milestones = state.milestones.filter(m=>String(m.id)!==b.dataset.id);
+      await saveMilestones();
+      renderMilestones();
+    });
+  });
+}
+
+document.getElementById('addMilestoneBtn').addEventListener('click', async ()=>{
+  const name = document.getElementById('m_name').value.trim();
+  if(!name) return;
+  state.milestones.push({
+    id: Date.now(),
+    name,
+    owner: document.getElementById('m_owner').value,
+    targetDate: document.getElementById('m_date').value,
+    status: document.getElementById('m_status').value
+  });
+  document.getElementById('m_name').value='';
+  document.getElementById('m_date').value='';
+  await saveMilestones();
+  renderMilestones();
+});
+
+/* ---------- WEEKLY REPORT ---------- */
+document.getElementById('prevWeek').addEventListener('click', ()=>{
+  state.weekAnchor.setDate(state.weekAnchor.getDate()-7);
+  renderWeekly();
+});
+document.getElementById('nextWeek').addEventListener('click', ()=>{
+  state.weekAnchor.setDate(state.weekAnchor.getDate()+7);
+  renderWeekly();
+});
+
+function weekDates(anchor){
+  const arr=[];
+  for(let i=0;i<7;i++){ const d=new Date(anchor); d.setDate(anchor.getDate()+i); arr.push(d); }
+  return arr;
+}
+
+function renderWeekly(){
+  const days = weekDates(state.weekAnchor);
+  document.getElementById('weekRange').textContent = fmtShort(days[0]) + ' – ' + fmtShort(days[6]) + ', ' + days[6].getFullYear();
+
+  // stats
+  let loggedDays = new Set(), totalEntries=0;
+  days.forEach(d=>{
+    const iso=toISO(d);
+    ['me','peer'].forEach(p=>{
+      if(state.entries[iso+'|'+p]){ totalEntries++; loggedDays.add(iso); }
+    });
+  });
+  const atRisk = state.milestones.filter(m=>m.status==='atrisk').length;
+  const inProg = state.milestones.filter(m=>m.status==='inprogress').length;
+  document.getElementById('statRow').innerHTML = `
+    <div class="stat"><div class="n">${totalEntries}</div><div class="l">Entries logged</div></div>
+    <div class="stat"><div class="n">${loggedDays.size}/7</div><div class="l">Days covered</div></div>
+    <div class="stat"><div class="n">${inProg}</div><div class="l">Milestones in progress</div></div>
+    <div class="stat"><div class="n">${atRisk}</div><div class="l">Milestones at risk</div></div>
+  `;
+
+  // report body
+  let html = `<h2>${escapeHtml(state.teamName)} — Weekly Report</h2><div class="meta">${fmtShort(days[0])} – ${fmtShort(days[6])}, ${days[6].getFullYear()}</div>`;
+
+  ['me','peer'].forEach(p=>{
+    html += `<div class="person-section"><h3>${escapeHtml(personName(p))}</h3>`;
+    let any=false;
+    days.forEach(d=>{
+      const iso=toISO(d);
+      const e = state.entries[iso+'|'+p];
+      if(!e || (!e.completed && !e.progress && !e.blockers && !e.notes)) return;
+      any=true;
+      html += `<div class="day-row"><div class="d">${d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</div>`;
+      if(e.completed) html += `<div><span class="cat-tag">${escapeHtml(e.completedCat||'HR Admin')}</span><strong>Completed:</strong> ${escapeHtml(e.completed)}</div>`;
+      if(e.progress) html += `<div><span class="cat-tag">${escapeHtml(e.progressCat||'HR Admin')}</span><strong>In progress:</strong> ${escapeHtml(e.progress)}</div>`;
+      if(e.blockers) html += `<div><strong>Blockers:</strong> ${escapeHtml(e.blockers)}</div>`;
+      if(e.notes) html += `<div><strong>Notes:</strong> ${escapeHtml(e.notes)}</div>`;
+      html += `</div>`;
+    });
+    if(!any) html += `<div class="no-entry">No entries logged this week</div>`;
+    html += `</div>`;
+  });
+
+  html += `<div class="report-section-title">Upcoming Projects &amp; Milestones</div>`;
+  if(state.milestones.length===0){
+    html += `<div class="no-entry">No milestones tracked yet</div>`;
+  } else {
+    const sorted=[...state.milestones].sort((a,b)=>(a.targetDate||'').localeCompare(b.targetDate||''));
+    sorted.forEach(m=>{
+      const ownerLabel = m.owner==='both'?'Both':personName(m.owner);
+      const dateLabel = m.targetDate ? fmtShort(fromISO(m.targetDate)) : 'No date';
+      html += `<div class="day-row"><strong>${escapeHtml(m.name)}</strong> — ${statusLabels[m.status]} · ${ownerLabel} · Target ${dateLabel}</div>`;
+    });
+  }
+
+  document.getElementById('reportBody').innerHTML = html;
+  renderReviewUI();
+}
+
+/* ---------- MANAGER REVIEW ---------- */
+function currentWeekKey(){ return toISO(state.weekAnchor); }
+
+function renderReviewUI(){
+  const key = currentWeekKey();
+  const review = state.reviews[key] || {status:null, comment:'', updatedAt:null};
+  document.querySelectorAll('.reaction-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.status===review.status);
+  });
+  document.getElementById('reviewComment').value = review.comment || '';
+  const meta = document.getElementById('reviewMeta');
+  if(review.status && review.updatedAt){
+    const d = new Date(review.updatedAt);
+    meta.textContent = 'Last updated ' + d.toLocaleDateString(undefined,{month:'short',day:'numeric'}) + ' at ' + d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+  } else {
+    meta.textContent = 'No review yet for this week';
+  }
+}
+
+document.querySelectorAll('.reaction-btn').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    const key = currentWeekKey();
+    const already = state.reviews[key] && state.reviews[key].status===btn.dataset.status;
+    state.reviews[key] = {
+      status: already ? null : btn.dataset.status,
+      comment: document.getElementById('reviewComment').value.trim(),
+      updatedAt: new Date().toISOString()
+    };
+    await saveReviews();
+    renderReviewUI();
+  });
+});
+
+document.getElementById('saveReviewBtn').addEventListener('click', async ()=>{
+  const key = currentWeekKey();
+  const existing = state.reviews[key] || {status:null};
+  state.reviews[key] = {
+    status: existing.status,
+    comment: document.getElementById('reviewComment').value.trim(),
+    updatedAt: new Date().toISOString()
+  };
+  await saveReviews();
+  renderReviewUI();
+  const btn = document.getElementById('saveReviewBtn');
+  const old = btn.textContent;
+  btn.textContent = 'Saved ✓';
+  setTimeout(()=>btn.textContent=old, 1200);
+});
+
+document.getElementById('copyReportBtn').addEventListener('click', ()=>{
+  const days = weekDates(state.weekAnchor);
+  let text = `${state.teamName.toUpperCase()} — WEEKLY REPORT\n${fmtShort(days[0])} – ${fmtShort(days[6])}, ${days[6].getFullYear()}\n\n`;
+  ['me','peer'].forEach(p=>{
+    text += `${personName(p).toUpperCase()}\n`;
+    let any=false;
+    days.forEach(d=>{
+      const iso=toISO(d);
+      const e = state.entries[iso+'|'+p];
+      if(!e || (!e.completed && !e.progress && !e.blockers && !e.notes)) return;
+      any=true;
+      text += `- ${d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}\n`;
+      if(e.completed) text += `  Completed [${e.completedCat||'HR Admin'}]: ${e.completed}\n`;
+      if(e.progress) text += `  In progress [${e.progressCat||'HR Admin'}]: ${e.progress}\n`;
+      if(e.blockers) text += `  Blockers: ${e.blockers}\n`;
+      if(e.notes) text += `  Notes: ${e.notes}\n`;
+    });
+    if(!any) text += `  No entries logged this week\n`;
+    text += `\n`;
+  });
+  text += `UPCOMING PROJECTS & MILESTONES\n`;
+  if(state.milestones.length===0){
+    text += `  None tracked yet\n`;
+  } else {
+    const sorted=[...state.milestones].sort((a,b)=>(a.targetDate||'').localeCompare(b.targetDate||''));
+    sorted.forEach(m=>{
+      const ownerLabel = m.owner==='both'?'Both':personName(m.owner);
+      const dateLabel = m.targetDate ? fmtShort(fromISO(m.targetDate)) : 'No date';
+      text += `- ${m.name} — ${statusLabels[m.status]} · ${ownerLabel} · Target ${dateLabel}\n`;
+    });
+  }
+  const review = state.reviews[currentWeekKey()];
+  if(review && review.status){
+    const statusText = {approved:'Approved', hold:'Hold', revision:'Needs Revision'}[review.status] || review.status;
+    text += `\nMANAGER REVIEW: ${statusText}\n`;
+    if(review.comment) text += `${review.comment}\n`;
+  }
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('copyReportBtn');
+    const old = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    setTimeout(()=>btn.textContent=old, 1200);
+  }).catch(()=>{ alert('Could not copy — please select and copy manually.'); });
+});
+
+/* ---------- INIT ---------- */
+(async function init(){
+  await loadAll();
+  renderDaily();
+  renderMilestones();
+})();
+</script>
+</body>
+</html>
